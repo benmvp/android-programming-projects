@@ -6,12 +6,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class QuizActivity extends AppCompatActivity {
 
-    private Button mTrueButton, mFalseButton, mNextButton;
+    private Button mTrueButton, mFalseButton;
+    private ImageButton mNextButton, mPreviousButton;
     private TextView mQuestionTextView;
 
     private Question[] mQuestionBank = new Question[] {
@@ -26,6 +28,17 @@ public class QuizActivity extends AppCompatActivity {
     private void updateQuestion() {
         int question = mQuestionBank[mCurrentIndex].getTextResId();
         mQuestionTextView.setText(question);
+    }
+
+    private void cycleQuestion(boolean isNext) {
+        mCurrentIndex += (isNext ? 1 : -1);
+
+        if (mCurrentIndex < 0)
+            mCurrentIndex = mQuestionBank.length - 1;
+        else if (mCurrentIndex >= mQuestionBank.length)
+            mCurrentIndex = 0;
+
+        updateQuestion();
     }
 
     private void checkAnswer(boolean userPressedTrue) {
@@ -45,6 +58,12 @@ public class QuizActivity extends AppCompatActivity {
         setContentView(R.layout.activity_quiz);
 
         mQuestionTextView = (TextView) findViewById(R.id.question_text_view);
+        mQuestionTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cycleQuestion(true);
+            }
+        });
 
         mTrueButton = (Button) findViewById(R.id.true_button);
         mTrueButton.setOnClickListener(new View.OnClickListener() {
@@ -62,12 +81,19 @@ public class QuizActivity extends AppCompatActivity {
             }
         });
 
-        mNextButton = (Button) findViewById(R.id.next_button);
+        mNextButton = (ImageButton) findViewById(R.id.next_button);
         mNextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
-                updateQuestion();
+                cycleQuestion(true);
+            }
+        });
+
+        mPreviousButton = (ImageButton) findViewById(R.id.previous_button);
+        mPreviousButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cycleQuestion(false);
             }
         });
 
