@@ -14,8 +14,9 @@ public class CheatActivity extends AppCompatActivity {
 
     private static final String EXTRA_ANSWER_IS_TRUE = "com.benmvp.geoquiz.answer_is_true";
     private static final String EXTRA_ANSWER_SHOWN = "com.benmvp.geoquiz.answer_shown";
+    private static final String KEY_ANSWER_SHOWN = "isAnswerShown";
 
-    private boolean mAnswerIsTrue;
+    private boolean mAnswerIsTrue, mIsAnswerShown;
 
     private TextView mAnswerTextView;
     private Button mShowAnswer;
@@ -43,18 +44,32 @@ public class CheatActivity extends AppCompatActivity {
         mShowAnswer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mAnswerTextView.setText(
-                        mAnswerIsTrue ? R.string.true_button : R.string.false_button
-                );
                 setAnswerShownResult(true);
             }
         });
+
+        if (savedInstanceState != null)
+            setAnswerShownResult(savedInstanceState.getBoolean(KEY_ANSWER_SHOWN, false));
     }
 
     private void setAnswerShownResult(boolean isAnswerShown) {
         Intent data = new Intent();
         data.putExtra(EXTRA_ANSWER_SHOWN, isAnswerShown);
         setResult(RESULT_OK, data);
+
+        mIsAnswerShown = isAnswerShown;
+
+        if (mIsAnswerShown) {
+            mAnswerTextView.setText(
+                    mAnswerIsTrue ? R.string.true_button : R.string.false_button
+            );
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(KEY_ANSWER_SHOWN, mIsAnswerShown);
     }
 
     @Override
