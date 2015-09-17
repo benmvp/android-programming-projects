@@ -11,9 +11,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
+import java.util.UUID;
 
 public class CrimeListFragment extends Fragment {
     private static final int REQUEST_CRIME = 1;
@@ -34,19 +34,20 @@ public class CrimeListFragment extends Fragment {
         return view;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        updateUI();
+    private void updateUI() {
+        updateUI(-1);
     }
 
-    private void updateUI() {
+    private void updateUI(int changedItemIndex) {
         CrimeLab crimeLab = CrimeLab.get(getActivity());
         List<Crime> crimes = crimeLab.getCrimes();
 
         if (mCrimeAdapter == null) {
             mCrimeAdapter = new CrimeAdapter(crimes);
             mCrimeRecyclerView.setAdapter(mCrimeAdapter);
+        }
+        else if (changedItemIndex > -1) {
+            mCrimeAdapter.notifyItemChanged(changedItemIndex);
         }
         else {
             mCrimeAdapter.notifyDataSetChanged();
@@ -56,10 +57,19 @@ public class CrimeListFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CRIME) {
+            UUID crimeIdToUpdate = CrimeActivity.getCrimeIdFromIntentResult(data);
+            List<Crime> crimes = CrimeLab.get(getActivity()).getCrimes();
+            int indexToUpdate = -1;
 
-        }
-        else {
-            super.onActivityResult(requestCode, resultCode, data);
+            for (int crimeNo = -1; ++crimeNo < crimes.size();) {
+                if (crimes.get(crimeNo).getId().equals(crimeIdToUpdate)) {
+                    indexToUpdate = crimeNo;
+                    break;
+                }
+            }
+
+            if (indexToUpdate > -1)
+                updateUI(indexToUpdate);
         }
     }
 

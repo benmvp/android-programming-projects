@@ -1,5 +1,6 @@
 package com.benmvp.criminalintent;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -57,6 +58,7 @@ public class CrimeFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 mCrime.setTitle(s.toString());
+                returnResult();
             }
 
             @Override
@@ -77,9 +79,14 @@ public class CrimeFragment extends Fragment {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 // Set the crime's solved property
                 mCrime.setSolved(isChecked);
+                returnResult();
             }
         });
 
         return view;
+    }
+
+    public void returnResult() {
+        getActivity().setResult(Activity.RESULT_OK, getActivity().getIntent());
     }
 }
