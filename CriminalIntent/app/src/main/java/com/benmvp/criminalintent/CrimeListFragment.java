@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.UUID;
 
@@ -56,7 +57,7 @@ public class CrimeListFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_CRIME) {
+        if (requestCode == REQUEST_CRIME && data != null) {
             UUID crimeIdToUpdate = CrimePagerActivity.getCrimeIdFromIntentResult(data);
             List<Crime> crimes = CrimeLab.get(getActivity()).getCrimes();
             int indexToUpdate = -1;
@@ -92,7 +93,7 @@ public class CrimeListFragment extends Fragment {
             mCrime = crime;
 
             mTitleTextView.setText(mCrime.getTitle());
-            mDateTextView.setText(mCrime.getDate().toString());
+            mDateTextView.setText((new SimpleDateFormat("EEEE, MMM dd, yyyy hh:mm a")).format(mCrime.getDate()));
             mSolvedCheckBox.setChecked(mCrime.isSolved());
         }
 

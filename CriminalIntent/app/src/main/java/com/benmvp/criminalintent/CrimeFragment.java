@@ -21,14 +21,16 @@ import java.util.Date;
 import java.util.UUID;
 
 public class CrimeFragment extends Fragment {
-    private static final String ARG_CRIME_ID = "crime_id";
-    private static final String DIALOG_DATE = "DialogDate";
+    private static final String ARG_CRIME_ID = "crime_id",
+        DIALOG_DATE = "DialogDate",
+        DIALOG_TIME = "DialogTime";
 
-    private static final int REQUEST_DATE = 0;
+    private static final int REQUEST_DATE = 0,
+        REQUEST_TIME = 1;
 
     private Crime mCrime;
 
-    private Button mDateButton;
+    private Button mDateButton, mTimeButton;
 
     public static CrimeFragment newInstance(UUID crimeId) {
         CrimeFragment fragment = new CrimeFragment();
@@ -75,7 +77,6 @@ public class CrimeFragment extends Fragment {
         });
 
         mDateButton = (Button) view.findViewById(R.id.crime_date);
-        mDateButton.setText(mCrime.getDate().toString());
         updateDate();
         mDateButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,6 +85,18 @@ public class CrimeFragment extends Fragment {
                 DatePickerFragment dialog = DatePickerFragment.newInstance(mCrime.getDate());
                 dialog.setTargetFragment(CrimeFragment.this, REQUEST_DATE);
                 dialog.show(manager, DIALOG_DATE);
+            }
+        });
+
+        mTimeButton = (Button) view.findViewById(R.id.crime_time);
+        updateTime();
+        mTimeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager manager = getFragmentManager();
+                TimePickerFragment dialog = TimePickerFragment.newInstance(mCrime.getDate());
+                dialog.setTargetFragment(CrimeFragment.this, REQUEST_TIME);
+                dialog.show(manager, DIALOG_TIME);
             }
         });
 
@@ -103,16 +116,28 @@ public class CrimeFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_DATE) {
-            Date date = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
-            mCrime.setDate(date);
-            updateDate();
-            returnResult();
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == REQUEST_DATE) {
+                Date date = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
+                mCrime.setDate(date);
+                updateDate();
+                returnResult();
+            }
+            else if (requestCode == REQUEST_TIME) {
+                Date time = (Date) data.getSerializableExtra(TimePickerFragment.EXTRA_TIME);
+                mCrime.setDate(time);
+                updateTime();
+                returnResult();
+            }
         }
     }
 
     private void updateDate() {
         mDateButton.setText((new SimpleDateFormat("EEEE, MMM dd, yyyy")).format(mCrime.getDate()));
+    }
+
+    private void updateTime() {
+        mTimeButton.setText((new SimpleDateFormat("hh:mm a")).format(mCrime.getDate()));
     }
 
     public void returnResult() {
